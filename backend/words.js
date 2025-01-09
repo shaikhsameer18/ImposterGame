@@ -1,4 +1,4 @@
-const wordCategories = {
+export const wordCategories = {
   animals: {
     name: "Animals",
     words: [
@@ -135,5 +135,3 @@ const wordCategories = {
     ],
   },
 };
-
-console.log(wordCategories);
