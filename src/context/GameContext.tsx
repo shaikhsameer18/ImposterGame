@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 interface Player {
   name: string;
   id: string;
+  emote?: string;
 }
 
 interface GameState {
@@ -14,7 +15,10 @@ interface GameState {
   otherImposters: string[] | null;
   imposterCount: number;
   randomImposter: boolean;
+  showCategories: boolean;
+  isImposter: boolean;
 }
+
 
 interface GameInfo {
   playerName: string;
@@ -41,6 +45,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     otherImposters: null,
     imposterCount: 1,
     randomImposter: false,
+    showCategories: true,
+    isImposter: false,
   });
 
   const [gameInfo, setGameInfo] = useState<GameInfo>({
@@ -63,3 +69,4 @@ export const useGame = () => {
   }
   return context;
 };
+
