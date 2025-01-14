@@ -6,7 +6,7 @@ import { WebSocketProvider } from './context/WebSocketContext';
 import { GameProvider } from './context/GameContext';
 import InstallPWA from './components/InstallPWA';
 
-const GameRoutes = () => {
+const AppRoutes = () => {
   return (
     <div className="h-[100dvh] overflow-hidden flex flex-col text-white bg-gradient-to-br from-indigo-900 to-purple-900">
       <div className="flex-1 overflow-y-auto">
@@ -24,17 +24,16 @@ const GameRoutes = () => {
   );
 };
 
-function App() {
+const App = () => {
   return (
     <Router>
       <GameProvider>
         <WebSocketProvider>
-          <GameRoutes />
+          <AppRoutes />
         </WebSocketProvider>
       </GameProvider>
     </Router>
   );
-}
+};
 
 export default App;
-
