@@ -38,13 +38,22 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
           switch (data.type) {
             case 'joined':
-              setGameState((prev) => ({ ...prev, isAdmin: data.isAdmin }));
+              setGameState((prev) => ({
+                ...prev,
+                isAdmin: data.isAdmin,
+                showCategories: true,
+                isImposter: false
+              }));
               setGameInfo((prev) => ({ ...prev, playerId: data.playerId }));
               toast.success('Connected to game room!');
               break;
 
             case 'playerCount':
-              setGameState((prev) => ({ ...prev, players: data.players }));
+              setGameState((prev) => ({
+                ...prev,
+                players: data.players,
+                showCategories: true
+              }));
               break;
 
             case 'gameStart':
@@ -54,6 +63,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 word: data.word,
                 category: data.category,
                 otherImposters: data.imposters,
+                isImposter: !data.word,
+                showCategories: true
               }));
               break;
 
@@ -65,9 +76,32 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               toast.success('Imposter count updated');
               break;
 
+            case 'adminUpdate':
+              setGameState((prev) => ({
+                ...prev,
+                isAdmin: data.isAdmin,
+                showCategories: true
+              }));
+              if (data.isAdmin) {
+                toast.success('You are now the admin');
+              }
+              break;
+
             case 'kicked':
               toast.error('You have been kicked from the game');
               window.location.href = '/';
+              break;
+
+            case 'emote':
+              setGameState((prev) => ({
+                ...prev,
+                players: prev.players.map(player =>
+                  player.id === data.playerId
+                    ? { ...player, emote: data.emoteName }
+                    : player
+                )
+              }));
+              toast(`${data.playerName} used ${data.emoteName} emote`);
               break;
 
             case 'error':
