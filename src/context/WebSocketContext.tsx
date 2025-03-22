@@ -1,34 +1,45 @@
-import React, { createContext, useContext, useCallback, useRef } from 'react';
+import { createContext, useContext, useCallback, useRef, useState, useEffect } from 'react';
 import { useGame } from './GameContext';
 import toast from 'react-hot-toast';
 
 interface WebSocketContextType {
   connect: (roomId: string, playerName: string) => Promise<void>;
   sendMessage: (message: any) => void;
+  isConnected: boolean;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
 
-export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
+  // Get game context
   const { setGameState, setGameInfo } = useGame();
   const wsRef = useRef<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   const connect = useCallback(async (roomId: string, playerName: string) => {
     return new Promise<void>((resolve, reject) => {
       try {
+        // Close existing connection if any
+        if (wsRef.current) {
+          wsRef.current.close();
+        }
+        
+        // Create new connection
         wsRef.current = new WebSocket(WS_URL);
 
         const connectionTimeout = setTimeout(() => {
           if (wsRef.current?.readyState !== WebSocket.OPEN) {
             toast.error('Connection timeout. Server might be down.');
+            setIsConnected(false);
             reject(new Error('Connection timeout'));
           }
         }, 5000);
 
         wsRef.current.onopen = () => {
           clearTimeout(connectionTimeout);
+          setIsConnected(true);
           wsRef.current?.send(JSON.stringify({ type: 'join', roomId, playerName }));
           resolve();
         };
@@ -112,13 +123,16 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         wsRef.current.onerror = () => {
           toast.error('Connection error. Please try again.');
+          setIsConnected(false);
           reject(new Error('WebSocket connection failed'));
         };
 
         wsRef.current.onclose = () => {
           toast.error('Connection closed. Please refresh the page.');
+          setIsConnected(false);
         };
       } catch (error) {
+        setIsConnected(false);
         reject(error);
       }
     });
@@ -132,8 +146,17 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, []);
 
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, []);
+
   return (
-    <WebSocketContext.Provider value={{ connect, sendMessage }}>
+    <WebSocketContext.Provider value={{ connect, sendMessage, isConnected }}>
       {children}
     </WebSocketContext.Provider>
   );

@@ -1,24 +1,23 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 interface Player {
-  name: string;
   id: string;
+  name: string;
   emote?: string;
 }
 
 interface GameState {
-  isAdmin: boolean;
-  gameStarted: boolean;
   players: Player[];
-  word: string | null;
-  category: string | null;
-  otherImposters: string[] | null;
+  gameStarted: boolean;
+  isAdmin: boolean;
+  isImposter: boolean;
+  word: string;
+  category: string;
   imposterCount: number;
   randomImposter: boolean;
   showCategories: boolean;
-  isImposter: boolean;
+  otherImposters: string[];
 }
-
 
 interface GameInfo {
   playerName: string;
@@ -26,27 +25,28 @@ interface GameInfo {
   playerId: string;
 }
 
-interface GameContextType {
+type GameContextType = {
   gameState: GameState;
-  setGameState: React.Dispatch<React.SetStateAction<GameState>>;
+  setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
   gameInfo: GameInfo;
-  setGameInfo: React.Dispatch<React.SetStateAction<GameInfo>>;
-}
+  setGameInfo: (info: GameInfo | ((prev: GameInfo) => GameInfo)) => void;
+  resetGame: () => void;
+};
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [gameState, setGameState] = useState<GameState>({
-    isAdmin: false,
-    gameStarted: false,
     players: [],
-    word: null,
-    category: null,
-    otherImposters: null,
-    imposterCount: 1,
-    randomImposter: false,
-    showCategories: true,
+    gameStarted: false,
+    isAdmin: false,
     isImposter: false,
+    word: '',
+    category: '',
+    imposterCount: 1,
+    randomImposter: true,
+    showCategories: true,
+    otherImposters: [],
   });
 
   const [gameInfo, setGameInfo] = useState<GameInfo>({
@@ -55,8 +55,30 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     playerId: '',
   });
 
+  // Reset game state to defaults
+  const resetGame = () => {
+    setGameState({
+      players: [],
+      gameStarted: false,
+      isAdmin: false,
+      isImposter: false,
+      word: '',
+      category: '',
+      imposterCount: 1,
+      randomImposter: true,
+      showCategories: true,
+      otherImposters: [],
+    });
+    
+    setGameInfo({
+      playerName: '',
+      roomId: '',
+      playerId: '',
+    });
+  };
+
   return (
-    <GameContext.Provider value={{ gameState, setGameState, gameInfo, setGameInfo }}>
+    <GameContext.Provider value={{ gameState, setGameState, gameInfo, setGameInfo, resetGame }}>
       {children}
     </GameContext.Provider>
   );
