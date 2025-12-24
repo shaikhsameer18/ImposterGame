@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-950 text-white;
+    background: linear-gradient(135deg, #1a1525 0%, #2d2438 50%, #1a1525 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 20%, rgba(251, 146, 60, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-surface-900/40 backdrop-blur-xl border border-surface-700/30 shadow-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card hover:bg-surface-900/60 hover:border-primary-500/30 transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 via-primary-500 to-accent-600 hover:from-primary-500 hover:via-primary-400 hover:to-accent-500 text-white font-medium rounded-xl shadow-glow transition-all duration-300 hover:shadow-glow-lg;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-secondary-600 to-secondary-500 hover:from-secondary-500 hover:to-secondary-400 text-white font-medium rounded-xl shadow-warm-glow transition-all duration-300;
+  }
+
+  .input-field {
+    @apply bg-surface-900/60 backdrop-blur-sm border border-surface-700/50 text-white placeholder-surface-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-300;
+  }
+}

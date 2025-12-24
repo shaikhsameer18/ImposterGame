@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import { useWebSocket } from '../context/WebSocketContext';
-import { Smile, ThumbsUp, ThumbsDown, Heart, Star, MessageSquareHeart, X, ChevronUp } from 'lucide-react';
+import {
+    Smile, ThumbsUp, ThumbsDown, Heart, Star,
+    Laugh, Frown, PartyPopper, Flame, Sparkles,
+    X, ChevronUp
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const emotes = [
-    { icon: Smile, name: 'smile', color: 'text-yellow-400', bgColor: 'bg-yellow-900/30', hoverBg: 'hover:bg-yellow-900/50', label: 'Smile' },
-    { icon: ThumbsUp, name: 'thumbs-up', color: 'text-primary-400', bgColor: 'bg-primary-900/30', hoverBg: 'hover:bg-primary-900/50', label: 'Agree' },
-    { icon: ThumbsDown, name: 'thumbs-down', color: 'text-red-400', bgColor: 'bg-red-900/30', hoverBg: 'hover:bg-red-900/50', label: 'Disagree' },
-    { icon: Heart, name: 'heart', color: 'text-pink-400', bgColor: 'bg-pink-900/30', hoverBg: 'hover:bg-pink-900/50', label: 'Love' },
-    { icon: Star, name: 'star', color: 'text-amber-400', bgColor: 'bg-amber-900/30', hoverBg: 'hover:bg-amber-900/50', label: 'Wow' },
+    { icon: Smile, name: 'smile', color: 'text-yellow-400', bgColor: 'bg-yellow-900/30', hoverBg: 'hover:bg-yellow-900/50', glowColor: 'shadow-yellow-500/50', label: '😊 Happy' },
+    { icon: Laugh, name: 'laugh', color: 'text-amber-400', bgColor: 'bg-amber-900/30', hoverBg: 'hover:bg-amber-900/50', glowColor: 'shadow-amber-500/50', label: '😂 LOL' },
+    { icon: ThumbsUp, name: 'thumbs-up', color: 'text-primary-400', bgColor: 'bg-primary-900/30', hoverBg: 'hover:bg-primary-900/50', glowColor: 'shadow-primary-500/50', label: '👍 Agree' },
+    { icon: ThumbsDown, name: 'thumbs-down', color: 'text-red-400', bgColor: 'bg-red-900/30', hoverBg: 'hover:bg-red-900/50', glowColor: 'shadow-red-500/50', label: '👎 Disagree' },
+    { icon: Heart, name: 'heart', color: 'text-pink-400', bgColor: 'bg-pink-900/30', hoverBg: 'hover:bg-pink-900/50', glowColor: 'shadow-pink-500/50', label: '❤️ Love' },
+    { icon: Star, name: 'star', color: 'text-amber-400', bgColor: 'bg-amber-900/30', hoverBg: 'hover:bg-amber-900/50', glowColor: 'shadow-amber-500/50', label: '⭐ Amazing' },
+    { icon: PartyPopper, name: 'party', color: 'text-secondary-400', bgColor: 'bg-secondary-900/30', hoverBg: 'hover:bg-secondary-900/50', glowColor: 'shadow-secondary-500/50', label: '🎉 Celebrate' },
+    { icon: Flame, name: 'fire', color: 'text-orange-400', bgColor: 'bg-orange-900/30', hoverBg: 'hover:bg-orange-900/50', glowColor: 'shadow-orange-500/50', label: '🔥 Fire' },
+    { icon: Sparkles, name: 'sparkles', color: 'text-accent-400', bgColor: 'bg-accent-900/30', hoverBg: 'hover:bg-accent-900/50', glowColor: 'shadow-accent-500/50', label: '✨ Brilliant' },
+    { icon: Frown, name: 'sad', color: 'text-blue-400', bgColor: 'bg-blue-900/30', hoverBg: 'hover:bg-blue-900/50', glowColor: 'shadow-blue-500/50', label: '😢 Sad' },
 ];
 
 const EmoteReactions = () => {
@@ -18,7 +27,7 @@ const EmoteReactions = () => {
     const [showEmotes, setShowEmotes] = useState(false);
     const [currentEmote, setCurrentEmote] = useState<string | null>(null);
     const [recentlyChanged, setRecentlyChanged] = useState(false);
-    
+
     // Get the current player's emote from gameState
     useEffect(() => {
         const myPlayer = gameState.players.find(player => player.id === gameInfo.playerId);
@@ -28,17 +37,17 @@ const EmoteReactions = () => {
     const handleEmote = (emoteName: string) => {
         // If clicking current emote, clear it
         const newEmote = currentEmote === emoteName ? '' : emoteName;
-        
+
         sendMessage({
             type: 'emote',
             roomId: gameInfo.roomId,
             playerId: gameInfo.playerId,
             emoteName: newEmote,
         });
-        
+
         setCurrentEmote(newEmote || null);
         setShowEmotes(false);
-        
+
         // Show animation feedback
         if (newEmote) {
             setRecentlyChanged(true);
@@ -53,7 +62,7 @@ const EmoteReactions = () => {
             playerId: gameInfo.playerId,
             emoteName: '',
         });
-        
+
         setCurrentEmote(null);
     };
 
@@ -65,76 +74,105 @@ const EmoteReactions = () => {
         <div className="relative">
             <AnimatePresence>
                 {currentEmote && ActiveEmoteIcon ? (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10 }} 
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className={`flex items-center justify-between mb-3 p-2 rounded-lg bg-surface-900/70 border border-surface-700/50 ${recentlyChanged ? 'ring-2 ring-primary-500/50' : ''}`}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className={`flex items-center justify-between mb-3 p-3 rounded-xl glass-card-hover border ${recentlyChanged ? 'border-primary-500/50 shadow-glow' : 'border-surface-700/50'
+                            }`}
                     >
                         <div className="flex items-center">
-                            <motion.div 
-                                animate={recentlyChanged ? { scale: [1, 1.2, 1] } : {}}
-                                transition={{ duration: 0.4 }}
-                                className={`p-1.5 rounded-full ${activeEmote.bgColor} mr-2`}
+                            <motion.div
+                                animate={recentlyChanged ? {
+                                    scale: [1, 1.3, 1],
+                                    rotate: [0, 10, -10, 0]
+                                } : {}}
+                                transition={{ duration: 0.5 }}
+                                className={`p-2 rounded-xl ${activeEmote.bgColor} mr-3 border border-${activeEmote.color.split('-')[1]}-500/30`}
                             >
-                                <ActiveEmoteIcon className={`w-5 h-5 ${activeEmote.color}`} />
+                                <ActiveEmoteIcon className={`w-5 h-5 md:w-6 md:h-6 ${activeEmote.color}`} />
                             </motion.div>
-                            <span className="text-sm text-surface-300">Your current reaction</span>
+                            <div>
+                                <span className="text-xs md:text-sm text-surface-400 block">Your reaction</span>
+                                <span className="text-sm md:text-base font-semibold text-surface-200">{activeEmote.label}</span>
+                            </div>
                         </div>
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.1, rotate: 90 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={handleClearEmote}
-                            className="p-1.5 text-surface-400 hover:text-surface-200 hover:bg-surface-700/50 rounded-full transition-colors"
+                            className="p-2 text-surface-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-all"
                             title="Clear reaction"
                         >
-                            <X className="w-4 h-4" />
-                        </button>
+                            <X className="w-4 h-4 md:w-5 md:h-5" />
+                        </motion.button>
                     </motion.div>
                 ) : null}
             </AnimatePresence>
-            
-            <button
+
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setShowEmotes(!showEmotes)}
-                className="group px-4 py-2.5 font-medium text-white transition-all bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 rounded-lg flex items-center justify-center space-x-2 w-full shadow-lg shadow-primary-900/20"
+                className="btn-primary group w-full px-4 py-3 md:py-3.5 font-semibold text-sm md:text-base flex items-center justify-center"
             >
-                <MessageSquareHeart className="w-5 h-5 mr-1.5 group-hover:animate-pulse" />
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-2 group-hover:rotate-12 transition-transform" />
                 <span>React with Emote</span>
-                <ChevronUp className={`w-4 h-4 ml-1 transition-transform duration-300 ${showEmotes ? 'rotate-180' : ''}`} />
-            </button>
-            
+                <motion.div
+                    animate={{ rotate: showEmotes ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <ChevronUp className="w-4 h-4 md:w-5 md:h-5 ml-2" />
+                </motion.div>
+            </motion.button>
+
             <AnimatePresence>
                 {showEmotes && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                        exit={{ opacity: 0, y: 10, height: 0 }}
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute left-0 right-0 p-3 mb-3 space-y-2 bg-surface-800 border border-surface-700 rounded-lg shadow-xl bottom-full z-50"
+                        className="absolute left-0 right-0 p-4 md:p-5 mb-3 glass-card rounded-2xl border border-surface-700/50 bottom-full z-[100] shadow-2xl"
                     >
-                        <div className="text-xs font-medium text-primary-400 mb-1 pl-1 flex items-center">
-                            <MessageSquareHeart className="w-3.5 h-3.5 mr-1.5" />
-                            Select your reaction:
+                        <div className="text-xs md:text-sm font-semibold text-primary-300 mb-3 md:mb-4 flex items-center">
+                            <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-2 text-primary-400" />
+                            Choose your reaction:
                         </div>
-                        <div className="grid grid-cols-5 gap-1">
-                            {emotes.map((emote) => {
+                        <div className="grid grid-cols-5 gap-2 md:gap-3">
+                            {emotes.map((emote, index) => {
                                 const isActive = currentEmote === emote.name;
                                 return (
                                     <motion.button
                                         key={emote.name}
-                                        whileHover={{ scale: 1.1 }}
+                                        initial={{ opacity: 0, scale: 0 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        whileHover={{ scale: 1.15, y: -5 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => handleEmote(emote.name)}
-                                        className={`p-2.5 flex flex-col items-center transition-all rounded-lg hover:bg-surface-700 ${
-                                            isActive ? `${emote.bgColor} ring-2 ring-${emote.color.split('-')[1]}-400` : 'bg-surface-900/70'
-                                        } ${emote.hoverBg}`}
+                                        className={`p-2 md:p-3 flex flex-col items-center transition-all rounded-xl ${isActive
+                                            ? `${emote.bgColor} border-2 border-${emote.color.split('-')[1]}-400 shadow-lg ${emote.glowColor}`
+                                            : 'glass-card-hover border border-surface-700/30'
+                                            }`}
                                         title={emote.label}
                                     >
                                         <motion.div
-                                            animate={isActive ? { scale: [1, 1.2, 1] } : {}}
-                                            transition={{ duration: 0.7, repeat: isActive ? Infinity : 0, repeatType: "reverse" }}
+                                            animate={isActive ? {
+                                                scale: [1, 1.2, 1],
+                                                rotate: [0, 10, -10, 0]
+                                            } : {}}
+                                            transition={{
+                                                duration: 0.8,
+                                                repeat: isActive ? Infinity : 0,
+                                                repeatType: "reverse"
+                                            }}
                                         >
-                                            <emote.icon className={`w-6 h-6 ${emote.color}`} />
+                                            <emote.icon className={`w-5 h-5 md:w-6 md:h-6 ${emote.color}`} />
                                         </motion.div>
-                                        <span className="text-xs mt-1 text-surface-300">{emote.label}</span>
+                                        <span className="text-[10px] md:text-xs mt-1 text-surface-300 font-medium text-center leading-tight">
+                                            {emote.label.split(' ')[0]}
+                                        </span>
                                     </motion.button>
                                 );
                             })}
@@ -147,4 +185,3 @@ const EmoteReactions = () => {
 };
 
 export default EmoteReactions;
-

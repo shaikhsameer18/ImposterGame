@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 
 const InstallPWA = () => {
+    const location = useLocation();
     const [supportsPWA, setSupportsPWA] = useState(false);
     const [promptInstall, setPromptInstall] = useState<any>(null);
     const [hasInteracted, setHasInteracted] = useState(false);
@@ -42,6 +44,11 @@ const InstallPWA = () => {
         return null;
     }
 
+    // Hide the button when on the game page
+    if (location.pathname === '/game') {
+        return null;
+    }
+
     return (
         <motion.button
             initial={{ y: 20, opacity: 0 }}
@@ -58,13 +65,26 @@ const InstallPWA = () => {
                     repeatType: "reverse"
                 }
             }}
-            className="fixed z-50 flex items-center px-5 py-3 font-medium text-white transition-all duration-200 transform rounded-lg shadow-lg bottom-4 right-4 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 shadow-primary-900/30 hover:scale-105"
+            className="fixed z-50 flex items-center px-4 md:px-5 py-3 md:py-3.5 font-semibold text-white transition-all duration-200 transform rounded-xl shadow-2xl bottom-4 right-4 glass-card border-2 border-primary-500/50 hover:border-primary-400 group"
             onClick={onClick}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
         >
-            <Download className="w-4 h-4 mr-2" />
-            Install App
+            <motion.div
+                animate={{
+                    rotate: [0, 10, -10, 0],
+                }}
+                transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+                className="mr-2 md:mr-3"
+            >
+                <Download className="w-4 h-4 md:w-5 md:h-5 text-primary-300" />
+            </motion.div>
+            <span className="text-sm md:text-base">Install App</span>
+            <Sparkles className="w-4 h-4 md:w-5 md:h-5 ml-2 text-accent-400 group-hover:rotate-12 transition-transform" />
         </motion.button>
     );
 };
